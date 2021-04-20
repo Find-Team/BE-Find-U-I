@@ -6,6 +6,9 @@ buildscript {
         // for QueryDSL
         queryDslVersion = '4.4.0'
         querydslPluginVersion = '1.0.10'
+
+        // for SpringDoc
+        springDocVersion = '1.5.7'
     }
     repositories {
         mavenCentral()
@@ -47,6 +50,10 @@ subprojects {
         annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jpa"
         annotationProcessor "jakarta.persistence:jakarta.persistence-api"
         annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+        // for SpringDoc
+        implementation group: 'org.springdoc:springdoc-openapi-ui:${springDocVersion}'
+
     }
 }
 
