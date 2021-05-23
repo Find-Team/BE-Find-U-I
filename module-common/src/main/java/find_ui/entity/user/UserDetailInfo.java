@@ -24,8 +24,35 @@ public class UserDetailInfo extends BaseEntity {
 
     private String introduction;
 
-    @Column(name = "basic_info")
-    private String basicInfo;
+    @Column(name = "job")
+    private String job;
+
+    @Column(name = "company")
+    private String company;
+
+    @Column(name = "education")
+    private String education;
+
+    @Column(name = "mbti")
+    private String mbti;
+
+    @Column(name = "height")
+    private String height;
+
+    @Column(name = "bodyType")
+    private String bodyType;
+
+    @Column(name = "smoking")
+    private String smoking;
+
+    @Column(name = "religion")
+    private String religion;
+
+    @Column(name = "marriage")
+    private String marriage;
+
+    @Column(name = "drinking")
+    private String drinking;
 
     @OneToOne
     @JoinColumn(name = "userSequence")

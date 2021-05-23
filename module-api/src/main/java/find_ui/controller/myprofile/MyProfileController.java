@@ -1,9 +1,7 @@
 package find_ui.controller.myprofile;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import find_ui.controller.myprofile.request.CreateUserProfileRequest;
+import org.springframework.web.bind.annotation.*;
 
 import find_ui.controller.myprofile.response.MyProfileResult;
 import find_ui.response.CommonResponse;
@@ -25,6 +23,14 @@ public class MyProfileController {
         MyProfileResult myProfileResult = MyProfileResult.builder()
                                                          .name("goodgid")
                                                          .build();
+        return new CommonResponse<>(myProfileResult);
+    }
+
+    @PostMapping
+    public CommonResponse<?> createUserProfile(@RequestBody CreateUserProfileRequest createUserProfileRequest) {
+
+        MyProfileResult myProfileResult = myProfileService.createMyProfile(createUserProfileRequest);
+
         return new CommonResponse<>(myProfileResult);
     }
 }
