@@ -23,12 +23,12 @@ public class Values extends BaseEntity {
     @Column(name = "values_seq")
     private Long valuesSequence;
 
+    @OneToOne
     @JoinColumn(name = "user_seq")
-    @OneToOne(mappedBy = "user_seq")
     private User userSequence;
 
+    @OneToOne
     @JoinColumn(name = "pick_values_question_seq")
-    @OneToOne(mappedBy = "valuesQuestionSequence")
     private ValuesQuestion pickValuesQuestionSequence;
 
     private Long priority;

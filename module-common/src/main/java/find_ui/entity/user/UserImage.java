@@ -33,8 +33,8 @@ public class UserImage extends BaseEntity {
     @Column(name = "img_url")
     private String imageUrl;
 
-    @JoinColumn(name = "user_seq")
-    @OneToOne(mappedBy = "userSequence")
+    @OneToOne
+    @JoinColumn(name = "userSequence")
     private User userSequence;
 
 }

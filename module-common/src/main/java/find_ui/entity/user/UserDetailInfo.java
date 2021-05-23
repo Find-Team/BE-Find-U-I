@@ -1,5 +1,6 @@
 package find_ui.entity.user;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,9 +28,9 @@ public class UserDetailInfo extends BaseEntity {
     @Column(name = "basic_info")
     private String basicInfo;
 
-    @JoinColumn(name = "user_seq")
-    @OneToOne(mappedBy = "userSequence")
-    private User userSequence;
+    @OneToOne
+    @JoinColumn(name = "userSequence")
+    private User user;
 
     @Column(name = "manner_score")
     private Long mannerScore;

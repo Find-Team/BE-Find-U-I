@@ -1,5 +1,6 @@
 package find_ui.entity.values;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,14 +24,14 @@ public class ValuesAnswer extends BaseEntity {
     @Column(name = "values_answer_Seq")
     private Long valuesAnswerSequence;
 
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_seq")
-    @OneToOne(mappedBy = "user_seq")
     private User userSequence;
 
     private String answer;
 
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "values_question_seq")
-    @OneToOne(mappedBy = "values_question_seq")
     private ValuesQuestion valuesQuestionSequence;
 
 }

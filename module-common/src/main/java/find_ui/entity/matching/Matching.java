@@ -1,5 +1,6 @@
 package find_ui.entity.matching;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -29,12 +30,12 @@ public class Matching extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MatchingStatus matchingStatus;
 
-    @Column(name = "from_user_seq")
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "from_user_seq")
     private User fromUser;
 
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "to_user_seq")
-    @OneToOne(mappedBy = "userSequence")
     private User toUser;
 
 }
