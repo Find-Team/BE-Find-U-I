@@ -25,11 +25,18 @@ spring:
 cloud:
   aws:
     credentials:
-      accessKey: AKIAVVFRUX2URBYKTXMH
-      secretKey: 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
+      accessKey: ${s3.accessKey}
+      secretKey: ${s3.secretKey}
     s3:
-      bucket: findu-i
+      bucket: ${s3.bucket}
     region:
-      static: ap-northeast-2
+      static: ${s3.region.static}
     stack:
       auto: false
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error

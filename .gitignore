@@ -42,3 +42,4 @@ out/
 
 ### DB Info ###
 **/resources/config/custom/db.yml
+**/resources/config/custom/s3.yml
