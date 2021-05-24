@@ -18,13 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    @ResponseStatus(HttpStatus.OK)
     public CommonResponse<?> handlerLinePayException(CustomException e) {
         return getCommonResponse(e.getReturnCode(), e.getReturnMessage());
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public CommonResponse<?> handleException(Exception e) {
         log.error("Unknown Exception", e);
         return getCommonResponse(ReturnCode.UNKNOWN_ERROR.getReturnCode(),
