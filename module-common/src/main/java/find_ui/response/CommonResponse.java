@@ -39,4 +39,11 @@ public class CommonResponse<T> {
         setReturnCode(returnEnum.getReturnCode());
         setReturnMessage(returnEnum.getReturnMessage());
     }
+
+    public static CommonResponse success() {
+        return builder()
+                .returnCode(ReturnCode.SUCCESS.getReturnCode())
+                .returnMessage(ReturnCode.SUCCESS.getReturnMessage())
+                .build();
+    }
 }

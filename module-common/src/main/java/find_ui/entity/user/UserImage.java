@@ -1,8 +1,5 @@
 package find_ui.entity.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,18 +11,21 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.ManyToAny;
 
 import find_ui.entity.BaseEntity;
-import find_ui.enums.UserImageStatus;
+import find_ui.enums.ImageType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserImage extends BaseEntity {
 
     @Id
@@ -34,7 +34,7 @@ public class UserImage extends BaseEntity {
     private Long userImageSequence;
 
     @Enumerated(EnumType.STRING)
-    private UserImageStatus userImageStatus;
+    private ImageType imageType;
 
     @Lob
     @Column(name = "img_url")

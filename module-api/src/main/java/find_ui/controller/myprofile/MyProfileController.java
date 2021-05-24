@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import find_ui.controller.myprofile.response.MyProfileResult;
 import find_ui.response.CommonResponse;
-import find_ui.service.MyProfileService.MyProfileService;
+import find_ui.service.myprofile.MyProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

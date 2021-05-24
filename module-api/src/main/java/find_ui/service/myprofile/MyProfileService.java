@@ -1,4 +1,4 @@
-package find_ui.service.MyProfileService;
+package find_ui.service.myprofile;
 
 import java.util.List;
 import java.util.Optional;

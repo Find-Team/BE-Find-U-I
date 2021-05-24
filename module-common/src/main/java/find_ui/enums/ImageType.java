@@ -1,6 +1,6 @@
 package find_ui.enums;
 
-public enum UserImageStatus {
+public enum ImageType {
     USER_PROFILE,
     INTERVIEW_CATEGORY_IMG
 }
