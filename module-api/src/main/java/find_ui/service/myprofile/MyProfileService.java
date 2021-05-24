@@ -1,9 +1,13 @@
 package find_ui.service.myprofile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import find_ui.entity.user.UserDetailInfo;
+import find_ui.entity.user.UserImage;
+import find_ui.repository.UserDetailInfoRepository;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MyProfileService {
 
     private final UserRepository userRepository;
+    private final UserDetailInfoRepository userDetailInfoRepository;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public MyProfileResult getMyProfile(Long userSequence) {
@@ -62,10 +67,33 @@ public class MyProfileService {
     private AccountInfo getAccountInfo(User user) {
         return AccountInfo.builder()
                           .nickName(user.getNickName())
-                          .birthDay(user.getBirthDayYmdt().toLocalDate())
+                          .birthDay(user.getBirthDayYmdt())
                           .sexType(user.getSexType())
                           .location(user.getLocation())
                           .build();
+    }
+
+
+    public User createMyProfile(List<String> imageUrlList, String introduction, AccountInfo accountInfo, String basicInfo, boolean isIdentityVerification) {
+        if (!isIdentityVerification) {
+            throw new CustomException(ReturnCode.NOT_IDENTITY_VERIFIED_USER);
+        }
+
+        UserDetailInfo userDetailInfo = new UserDetailInfo();
+        userDetailInfo.setIntroduction(introduction);
+        userDetailInfo.setMannerScore(0L);
+        // TODO: validation ?
+        userDetailInfo.setBasicInfo(basicInfo);
+
+        User user = new User();
+        user.setBirthDayYmdt(accountInfo.getBirthDay());
+        user.setLocation(accountInfo.getLocation());
+        user.setNickName(accountInfo.getNickName());
+        user.setSexType(accountInfo.getSexType());
+        user.setIdentityVerificationYmdt(LocalDateTime.now());
+        user.setUserDetailInfo(userDetailInfo);
+
+        return userRepository.save(user);
     }
 }
 

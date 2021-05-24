@@ -30,8 +30,6 @@ public class User extends BaseEntity {
     @Column(name = "userSequence")
     private Long userSequence;
 
-    private String name;
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20) default 'SUSPEND'")
     private UserStatus status;

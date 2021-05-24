@@ -1,9 +1,9 @@
 package find_ui.controller.myprofile;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import find_ui.controller.myprofile.response.AccountInfo;
+import find_ui.controller.myprofile.response.BasicInfo;
+import find_ui.entity.user.User;
+import org.springframework.web.bind.annotation.*;
 
 import find_ui.controller.myprofile.response.MyProfileResult;
 import find_ui.response.CommonResponse;
@@ -14,6 +14,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,5 +40,17 @@ public class MyProfileController {
     public CommonResponse<?> getUserProfile(@PathVariable Long userSequence) {
         MyProfileResult myProfileResult = myProfileService.getMyProfile(userSequence);
         return new CommonResponse<>(myProfileResult);
+    }
+
+    @PostMapping
+    public CommonResponse<?> createUserProfile(@RequestParam("imageUrlList") List<String> imageUrlList,
+                                               @RequestParam("introduction") String introduction,
+                                               @RequestParam("accountInfo") AccountInfo accountInfo,
+                                               @RequestParam("basicInfo") String basicInfo,
+                                               @RequestParam(value = "isIdentityVerification", defaultValue = "false") boolean isIdentityVerification) {
+
+        User user = myProfileService.createMyProfile(imageUrlList, introduction, accountInfo, basicInfo, isIdentityVerification);
+
+        return new CommonResponse<>(user);
     }
 }
