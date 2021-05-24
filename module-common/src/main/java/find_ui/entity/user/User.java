@@ -1,6 +1,8 @@
 package find_ui.entity.user;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +11,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import find_ui.entity.BaseEntity;
-import find_ui.enums.Sex;
+import find_ui.enums.SexType;
 import find_ui.enums.UserStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +43,7 @@ public class User extends BaseEntity {
     private LocalDateTime identityVerificationYmdt;
 
     @Enumerated(EnumType.STRING)
-    private Sex sex;
+    private SexType sexType;
 
     private String location;
 
@@ -49,5 +52,11 @@ public class User extends BaseEntity {
 
     @Column(name = "user_profile_img_seq")
     private Long userProfileImageSequence;
+
+    @OneToOne(mappedBy = "user")
+    private UserDetailInfo userDetailInfo;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserImage> userImage = new ArrayList<>();
 
 }

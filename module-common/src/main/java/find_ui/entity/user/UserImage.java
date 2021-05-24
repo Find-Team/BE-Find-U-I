@@ -1,15 +1,22 @@
 package find_ui.entity.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.ManyToAny;
 
 import find_ui.entity.BaseEntity;
 import find_ui.enums.UserImageStatus;
@@ -33,8 +40,8 @@ public class UserImage extends BaseEntity {
     @Column(name = "img_url")
     private String imageUrl;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userSequence")
-    private User userSequence;
+    private User user;
 
 }

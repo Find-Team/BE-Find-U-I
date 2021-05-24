@@ -1,4 +1,4 @@
-package find_ui.controller;
+package find_ui.controller.upload;
 
 import java.io.IOException;
 

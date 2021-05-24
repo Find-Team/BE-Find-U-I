@@ -1,6 +1,6 @@
 package find_ui.enums;
 
-public enum Sex {
+public enum SexType {
     MAN,
     WOMAN
 }

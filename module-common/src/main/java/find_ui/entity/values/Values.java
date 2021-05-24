@@ -15,7 +15,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "valuation")
 public class Values extends BaseEntity {
 
     @Id
