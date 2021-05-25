@@ -1,8 +1,13 @@
 package find_ui.enums;
 
 public enum MatchingStatus {
+    MATCHING_COMPLETE,
     MATCHING,
     FOUND,
     FEELING,
-    DIBS
+    DIBS,
+    DISCONNECTED_MATCHING,
+    DISCONNECTED_RECEIVED_FEELING,
+    DISCONNECTED_SEND_FEELING,
+    DISCONNECTED_DIBS,
 }

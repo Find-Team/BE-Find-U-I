@@ -2,10 +2,13 @@ package find_ui.controller.matching;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import find_ui.controller.matching.response.MatchingResult;
+import find_ui.controller.matching.request.MatchingForm;
 import find_ui.response.CommonResponse;
 import find_ui.service.matching.MatchingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,5 +42,11 @@ public class MatchingController {
     public CommonResponse<?> getMyMatchingInfo(@PathVariable Long userSequence) {
         MatchingResult matchingResult = matchingService.getMatchingInfo(userSequence);
         return new CommonResponse<>(matchingResult);
+    }
+
+    @PostMapping("/")
+    public CommonResponse requestPick(@RequestBody MatchingForm matchingForm){
+        matchingService.requestMatching(matchingForm);
+        return CommonResponse.success();
     }
 }

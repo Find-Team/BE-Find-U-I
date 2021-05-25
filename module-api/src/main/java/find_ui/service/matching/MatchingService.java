@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import find_ui.controller.matching.request.MatchingForm;
 import find_ui.controller.matching.response.MatchingResult;
 import find_ui.controller.matching.response.MatchingResult.CommonInfo;
 import find_ui.entity.matching.Matching;
@@ -17,6 +18,7 @@ import find_ui.entity.user.User;
 import find_ui.enums.MatchingStatus;
 import find_ui.enums.response.ReturnCode;
 import find_ui.exception.CustomException;
+import find_ui.repository.MatchingRepository;
 import find_ui.repository.UserImageRepository;
 import find_ui.repository.UserRepository;
 import find_ui.utils.AgeUtil;
@@ -32,6 +34,7 @@ public class MatchingService {
     private final JPAQueryFactory jpaQueryFactory;
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
+    private final MatchingRepository matchingRepository;
 
     public MatchingResult getMatchingInfo(Long userSequence) {
 
@@ -116,5 +119,97 @@ public class MatchingService {
             return matching.getToUser();
         }
         return matching.getFromUser();
+    }
+
+    public void requestMatching(MatchingForm matchingForm) {
+
+        Long fromUserSequence = matchingForm.getFromUserSequence();
+        Long toUserSequence = matchingForm.getToUserSequence();
+        MatchingStatus matchingStatus = matchingForm.getMatchingStatus();
+
+        User fromUser = userRepository.findById(fromUserSequence).get();
+        User toUser = userRepository.findById(toUserSequence).get();
+
+        switch (matchingStatus) {
+            case MATCHING:
+                disconnectedMatchingData(MatchingStatus.FEELING, MatchingStatus.DISCONNECTED_RECEIVED_FEELING,
+                                         fromUser, toUser);
+                disconnectedMatchingData(MatchingStatus.FEELING, MatchingStatus.DISCONNECTED_RECEIVED_FEELING,
+                                         toUser, fromUser);
+                addNewMatchingData(MatchingStatus.MATCHING_COMPLETE, fromUser, toUser);
+                addNewMatchingData(MatchingStatus.MATCHING_COMPLETE, toUser, fromUser);
+            case FEELING:
+                boolean isMatchingPossible = checkMatchingPossible(MatchingStatus.FEELING, fromUser, toUser);
+                if (isMatchingPossible) {
+                    addNewMatchingData(MatchingStatus.MATCHING, fromUser, toUser);
+                } else {
+                    addNewMatchingData(MatchingStatus.FEELING, fromUser, toUser);
+                }
+                break;
+            case DIBS:
+                addNewMatchingData(MatchingStatus.DIBS, fromUser, toUser);
+            case DISCONNECTED_MATCHING:
+                disconnectedMatchingData(MatchingStatus.MATCHING, MatchingStatus.DISCONNECTED_MATCHING,
+                                         fromUser, toUser);
+                disconnectedMatchingData(MatchingStatus.MATCHING, MatchingStatus.DISCONNECTED_MATCHING,
+                                         toUser, fromUser);
+                break;
+            case DISCONNECTED_RECEIVED_FEELING:
+                disconnectedMatchingData(MatchingStatus.FEELING, MatchingStatus.DISCONNECTED_RECEIVED_FEELING,
+                                         fromUser, toUser);
+                disconnectedMatchingData(MatchingStatus.FEELING, MatchingStatus.DISCONNECTED_RECEIVED_FEELING,
+                                         toUser, fromUser);
+                break;
+            case DISCONNECTED_SEND_FEELING:
+                disconnectedMatchingData(MatchingStatus.FEELING, MatchingStatus.DISCONNECTED_SEND_FEELING,
+                                         fromUser, toUser);
+                break;
+            case DISCONNECTED_DIBS:
+                disconnectedMatchingData(MatchingStatus.DIBS, MatchingStatus.DISCONNECTED_DIBS,
+                                         fromUser, toUser);
+                disconnectedMatchingData(MatchingStatus.DIBS, MatchingStatus.DISCONNECTED_DIBS,
+                                         toUser, fromUser);
+                break;
+
+            default:
+                log.info("Requested matchingStatus(={}) is not appropriate.", matchingStatus);
+                break;
+        }
+    }
+
+    private boolean checkMatchingPossible(MatchingStatus matchingStatus, User fromUser, User toUser) {
+        BooleanBuilder builder = getBooleanBuilder(matchingStatus, toUser, fromUser);
+        long executeCount = executeQueryFactory(MatchingStatus.MATCHING, builder);
+        return executeCount != 0 ? true : false;
+    }
+
+    private void disconnectedMatchingData(MatchingStatus fromMatchingStatus, MatchingStatus toMatchingStatus,
+                                          User fromUser, User toUser) {
+        BooleanBuilder builder = getBooleanBuilder(fromMatchingStatus, fromUser, toUser);
+        executeQueryFactory(toMatchingStatus, builder);
+    }
+
+    private long executeQueryFactory(MatchingStatus toMatchingStatus, BooleanBuilder builder) {
+        return jpaQueryFactory.update(QMatching.matching)
+                              .where(builder)
+                              .set(QMatching.matching.matchingStatus, toMatchingStatus)
+                              .execute();
+    }
+
+    private BooleanBuilder getBooleanBuilder(MatchingStatus fromMatchingStatus, User fromUser, User toUser) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(QMatching.matching.fromUser.eq(fromUser));
+        builder.and(QMatching.matching.toUser.eq(toUser));
+        builder.and(QMatching.matching.matchingStatus.eq(fromMatchingStatus));
+        return builder;
+    }
+
+    private void addNewMatchingData(MatchingStatus matchingStatus, User fromUser, User toUser) {
+        Matching matching = Matching.builder()
+                                 .fromUser(fromUser)
+                                 .toUser(toUser)
+                                 .matchingStatus(matchingStatus)
+                                 .build();
+        matchingRepository.save(matching);
     }
 }

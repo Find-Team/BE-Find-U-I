@@ -14,12 +14,18 @@ import javax.persistence.OneToOne;
 import find_ui.entity.BaseEntity;
 import find_ui.entity.user.User;
 import find_ui.enums.MatchingStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Matching extends BaseEntity {
 
     @Id
