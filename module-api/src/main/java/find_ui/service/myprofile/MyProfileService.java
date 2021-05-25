@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import find_ui.controller.myprofile.response.AccountInfo;
-import find_ui.controller.myprofile.response.BasicInfo;
+import find_ui.utils.BasicInfo;
 import find_ui.controller.myprofile.response.MyProfileResult;
 import find_ui.entity.user.User;
 import find_ui.enums.response.ReturnCode;

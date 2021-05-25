@@ -1,8 +1,14 @@
-package find_ui.controller.myprofile.response;
+package find_ui.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import find_ui.controller.myprofile.response.BodyType;
+import find_ui.controller.myprofile.response.DrinkingType;
+import find_ui.controller.myprofile.response.MarriedType;
+import find_ui.controller.myprofile.response.Mbti;
+import find_ui.controller.myprofile.response.Religion;
+import find_ui.controller.myprofile.response.SmokingType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

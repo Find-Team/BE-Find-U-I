@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import find_ui.enums.YesOrNoType;
+import find_ui.utils.BasicInfo;
 import lombok.Builder;
 import lombok.Getter;
 
