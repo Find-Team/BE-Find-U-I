@@ -44,6 +44,17 @@ public class MatchingController {
         return new CommonResponse<>(matchingResult);
     }
 
+    @Operation(summary = "Request Matching")
+    @ApiResponses({
+            @ApiResponse(responseCode = "0000", description = "Success Request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CommonResponse.class))),
+            @ApiResponse(responseCode = "9999", description = "Fail Request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CommonResponse.class))),
+    })
     @PostMapping("/")
     public CommonResponse requestPick(@RequestBody MatchingForm matchingForm){
         matchingService.requestMatching(matchingForm);
