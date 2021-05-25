@@ -23,7 +23,6 @@ public class ValuesController {
 
     private final ValuesService valuesService;
 
-
     @Operation(summary = "Get User Values-View Type")
     @ApiResponses({
             @ApiResponse(responseCode = "0000", description = "Success Request",
@@ -31,7 +30,7 @@ public class ValuesController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = MatchingResult.class)))
     })
-    @GetMapping("/{userSequence}")
+    @GetMapping("/{userSequence}/view-type")
     public CommonResponse getUserValuesViewType(@PathVariable Long userSequence) {
         ValuesViewType userValuesViewType = valuesService.getUserValuesViewType(userSequence);
         return new CommonResponse(userValuesViewType);
