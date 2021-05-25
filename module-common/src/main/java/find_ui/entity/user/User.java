@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import find_ui.entity.BaseEntity;
+import find_ui.entity.values.Values;
+import find_ui.entity.values.ValuesAnswer;
 import find_ui.enums.SexType;
 import find_ui.enums.UserStatus;
 import lombok.Getter;
@@ -58,5 +60,11 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<UserImage> userImage = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Values> valuesList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<ValuesAnswer> valuesAnswerList = new ArrayList<>();
 
 }

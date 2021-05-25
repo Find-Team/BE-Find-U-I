@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import find_ui.entity.BaseEntity;
@@ -23,9 +24,9 @@ public class Values extends BaseEntity {
     @Column(name = "values_seq")
     private Long valuesSequence;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_seq")
-    private User userSequence;
+    private User user;
 
     @OneToOne
     @JoinColumn(name = "pick_values_question_seq")

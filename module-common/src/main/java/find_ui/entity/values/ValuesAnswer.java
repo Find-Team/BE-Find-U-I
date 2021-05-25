@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 import find_ui.entity.BaseEntity;
@@ -24,14 +25,14 @@ public class ValuesAnswer extends BaseEntity {
     @Column(name = "values_answer_Seq")
     private Long valuesAnswerSequence;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_seq")
-    private User userSequence;
+    private User user;
 
     private String answer;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "values_question_seq")
-    private ValuesQuestion valuesQuestionSequence;
+    private ValuesQuestion valuesQuestion;
 
 }

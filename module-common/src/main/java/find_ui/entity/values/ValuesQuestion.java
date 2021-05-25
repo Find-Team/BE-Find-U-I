@@ -27,7 +27,7 @@ public class ValuesQuestion extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "values_category_seq")
-    private ValuesCategory valuesCategorySequence;
+    private ValuesCategory valuesCategory;
 
     private String question;
 
