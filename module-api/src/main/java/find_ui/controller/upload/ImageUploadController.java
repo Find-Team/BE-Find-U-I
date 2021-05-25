@@ -24,11 +24,8 @@ public class ImageUploadController {
 
     @ResponseBody
     @PostMapping("/upload")
-    public CommonResponse upload(@RequestParam("userSequence") Long userSequence,
-                                 @RequestParam("imageType") ImageType imageType,
-                                 @RequestParam("image") MultipartFile multipartFile) throws IOException {
+    public CommonResponse upload(@RequestParam("image") MultipartFile multipartFile) throws IOException {
         String imageUrl = s3Client.upload(multipartFile, "profile");
-        imageUploadService.uploadImage(userSequence, imageUrl, imageType);
         return new CommonResponse(imageUrl);
     }
 
