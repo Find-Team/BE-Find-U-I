@@ -34,7 +34,7 @@ public class ValuesQuestion extends BaseEntity {
     private String question;
 
     @OneToMany(mappedBy = "valuesQuestion")
-    private List<ValuesAnswerOption> valuesAnswerOptions = new ArrayList<>();
+    private List<ValuesSelectableAnswer> valuesSelectableAnswers = new ArrayList<>();
 
 
 }

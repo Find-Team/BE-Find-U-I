@@ -29,10 +29,11 @@ public class ValuesAnswer extends BaseEntity {
     @JoinColumn(name = "user_seq")
     private User user;
 
-    private String answer;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "values_question_seq")
     private ValuesQuestion valuesQuestion;
 
+    @OneToOne
+    @JoinColumn(name = "values_selectable_answer_seq")
+    private ValuesSelectableAnswer valuesSelectableAnswer;
 }

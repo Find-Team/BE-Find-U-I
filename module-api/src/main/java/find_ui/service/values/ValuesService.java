@@ -1,17 +1,21 @@
 package find_ui.service.values;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import find_ui.controller.values.response.PickedValuesResult;
 import find_ui.controller.values.response.PickedValuesResult.ValuesDto;
 import find_ui.controller.values.response.QuestionAnswerResult;
-import find_ui.controller.values.response.QuestionAnswerResult.QuestionAnswerVo;
+import find_ui.controller.values.response.QuestionAnswerResult.AnswerVo;
+import find_ui.controller.values.response.QuestionAnswerResult.QuestionAndAnswer;
+import find_ui.controller.values.response.QuestionAnswerResult.QuestionAndAnswerVo;
 import find_ui.entity.user.User;
 import find_ui.entity.values.Values;
 import find_ui.entity.values.ValuesAnswer;
@@ -84,53 +88,89 @@ public class ValuesService {
             throw new CustomException(ReturnCode.UNKNOWN_ERROR);
         }
         User user = userOptional.get();
+
+        Map<Long, QuestionAndAnswerVo> allQuestionAndSelectableAnswerMap = new HashMap<>();
+        List<ValuesQuestion> valuesQuestionList = valuesQuestionRepository.findAll();
+        for (ValuesQuestion item : valuesQuestionList) {
+            List<AnswerVo> answerVoList = item.getValuesSelectableAnswers().stream()
+                                              .map(i -> AnswerVo.builder()
+                                                                .selectableAnswerSequence(
+                                                                        i.getValuesSelectableAnswerSequence())
+                                                                .answerText(i.getSelectableAnswer())
+                                                                .build())
+                                              .collect(Collectors.toList());
+
+            QuestionAndAnswerVo questionAndAnswerVo =
+                    QuestionAndAnswerVo.builder()
+                                       .question(item.getQuestion())
+                                       .questionSequence(item.getValuesQuestionSequence())
+                                       .selectableAnswerList(answerVoList)
+                                       .categoryType(item.getValuesCategory().getValuesCategoryType())
+                                       .build();
+            allQuestionAndSelectableAnswerMap.put(item.getValuesQuestionSequence(), questionAndAnswerVo);
+        }
+
+        // Process user picked answer list
         List<ValuesAnswer> valuesAnswerList = user.getValuesAnswerList();
-
-        Map<ValuesCategoryType, List<QuestionAnswerVo>> map = new HashMap<>();
-
         for (ValuesAnswer item : valuesAnswerList) {
-            ValuesQuestion valuesQuestion = item.getValuesQuestion();
-            ValuesCategoryType valuesCategoryType = valuesQuestion.getValuesCategory().getValuesCategoryType();
+            // 유저가 대답한 질문에 해당하는 Question 갖고오기
+            QuestionAndAnswerVo questionAndAnswerVo =
+                    allQuestionAndSelectableAnswerMap.get(item.getValuesQuestion().getValuesQuestionSequence());
+            List<AnswerVo> selectableAnswerList = questionAndAnswerVo.getSelectableAnswerList();
 
-            if (!map.containsKey(valuesCategoryType)) {
-                // Initialize for Key & Value
-                map.computeIfAbsent(valuesCategoryType,
-                                    key -> new ArrayList<>());
+            // 유저가 해당 질문에 어떤 답을 했는지 체크
+            List<AnswerVo> newSelectableAnswerList = new ArrayList<>();
+            for (AnswerVo answerVoItem : selectableAnswerList) {
+                if (answerVoItem.getSelectableAnswerSequence() ==
+                    item.getValuesSelectableAnswer().getValuesSelectableAnswerSequence()) {
+                    answerVoItem = answerVoItem.toBuilder().isChoiced(true).build();
+                }
+                newSelectableAnswerList.add(answerVoItem);
             }
 
-            List<String> answerOptions = new ArrayList<>();
-            valuesQuestion.getValuesAnswerOptions().stream()
-                          .forEach(i -> answerOptions.add(i.getSelectableOption()));
+            // 유저가 택한 답을 갖고 있는 newSelectableAnswerList로 교체
+            questionAndAnswerVo = questionAndAnswerVo.toBuilder()
+                                                     .selectableAnswerList(newSelectableAnswerList)
+                                                     .build();
 
-            map.computeIfPresent(valuesCategoryType,
-                                 (k, v) ->
-                                 {
-                                     v.add(QuestionAnswerVo.builder()
-                                                           .categoryType(valuesCategoryType)
-                                                           .question(valuesQuestion.getQuestion())
-                                                           .answerOptions(answerOptions)
-                                                           .build());
-                                     return v;
-                                 });
-
+            allQuestionAndSelectableAnswerMap.put(item.getValuesQuestion().getValuesQuestionSequence(),
+                                                  questionAndAnswerVo);
         }
 
-        List<QuestionAnswerVo> questionAndOptions = new ArrayList<>();
-        for (Map.Entry<ValuesCategoryType, List<QuestionAnswerVo>> entry : map.entrySet()) {
+        Map<ValuesCategoryType, List<QuestionAndAnswerVo>> groupBygCategoryMap = new HashMap<>();
+
+        // Initialize by Category
+        Arrays.stream(ValuesCategoryType.values()).forEach(i -> groupBygCategoryMap.put(i, new ArrayList<>()));
+
+        allQuestionAndSelectableAnswerMap.values()
+                                         .stream()
+                                         .forEach(i -> {
+                                             List<QuestionAndAnswerVo> questionAndAnswerVoList = groupBygCategoryMap.get(i.getCategoryType());
+
+                                             questionAndAnswerVoList.add(QuestionAndAnswerVo.builder()
+                                                                                            .questionSequence(i.getQuestionSequence())
+                                                                                            .question(i.getQuestion())
+                                                                                            .selectableAnswerList(i.getSelectableAnswerList())
+                                                                                            .build());
+                                         });
+
+        // Make Data for QuestionAnswerResult
+        List<QuestionAndAnswer> questionAndAnswerList = new ArrayList<>();
+        for (Map.Entry<ValuesCategoryType, List<QuestionAndAnswerVo>> entry : groupBygCategoryMap.entrySet()) {
             ValuesCategoryType key = entry.getKey();
-            List<QuestionAnswerVo> value = entry.getValue();
-            for (QuestionAnswerVo item : value){
-                questionAndOptions.add(item);
+            List<QuestionAndAnswerVo> value = entry.getValue();
 
+            List<QuestionAndAnswerVo> questionAndAnswerVoList = new ArrayList<>();
+            for (QuestionAndAnswerVo item : value) {
+                questionAndAnswerVoList.add(item);
             }
-        }
-        return QuestionAnswerResult.of(questionAndOptions);
-    }
 
-    private ArrayList<String> addAnswerOptions(List<String> oldAnswerOptions, String answerOption) {
-        ArrayList<String> newAnswerOptions = new ArrayList<>();
-        newAnswerOptions.addAll(oldAnswerOptions);
-        newAnswerOptions.add(answerOption);
-        return newAnswerOptions;
+            questionAndAnswerList.add(QuestionAndAnswer.builder()
+                                                       .categoryType(key)
+                                                       .questionAndAnswerInfoList(questionAndAnswerVoList)
+                                                       .build());
+        }
+
+        return QuestionAnswerResult.of(questionAndAnswerList);
     }
 }
