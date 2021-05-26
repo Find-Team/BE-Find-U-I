@@ -17,12 +17,14 @@ import javax.persistence.OneToOne;
 import find_ui.entity.BaseEntity;
 import find_ui.enums.SexType;
 import find_ui.enums.UserStatus;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User extends BaseEntity {
 
     @Id

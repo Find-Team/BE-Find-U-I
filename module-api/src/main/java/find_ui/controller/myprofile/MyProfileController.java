@@ -43,9 +43,9 @@ public class MyProfileController {
     }
 
     @PostMapping
-    public CommonResponse<?> createUserProfile(@RequestParam("imageUrlList") List<String> imageUrlList,
+    public CommonResponse<?> createUserProfile(@RequestBody AccountInfo accountInfo,
+                                               @RequestParam("imageUrlList") List<String> imageUrlList,
                                                @RequestParam("introduction") String introduction,
-                                               @RequestParam("accountInfo") AccountInfo accountInfo,
                                                @RequestParam("basicInfo") String basicInfo,
                                                @RequestParam(value = "isIdentityVerification", defaultValue = "false") boolean isIdentityVerification) {
 
