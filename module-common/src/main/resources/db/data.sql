@@ -111,3 +111,20 @@ INSERT INTO values_answer(answer, user_seq, values_question_seq,created_date, la
 
 select *
 from values_answer;
+
+
+INSERT INTO valuation(priority, pick_values_question_seq, user_seq, created_date, last_modify_date) VALUES (1, 1, 1, NOW(), NOW());
+INSERT INTO valuation(priority, pick_values_question_seq, user_seq, created_date, last_modify_date) VALUES (1, 6, 1, NOW(), NOW());
+INSERT INTO valuation(priority, pick_values_question_seq, user_seq, created_date, last_modify_date) VALUES (1, 11, 1, NOW(), NOW());
+select *
+from valuation;
+
+
+INSERT INTO values_answer_option(selectable_option, values_question_seq, created_date, last_modify_date) VALUES ('selectable option 1-1', 1, NOW(), NOW());
+INSERT INTO values_answer_option(selectable_option, values_question_seq, created_date, last_modify_date) VALUES ('selectable option 1-2', 1, NOW(), NOW());
+INSERT INTO values_answer_option(selectable_option, values_question_seq, created_date, last_modify_date) VALUES ('selectable option 2-1', 2, NOW(), NOW());
+INSERT INTO values_answer_option(selectable_option, values_question_seq, created_date, last_modify_date) VALUES ('selectable option 2-2', 2, NOW(), NOW());
+
+select *
+from values_answer_option;
+
