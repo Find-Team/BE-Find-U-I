@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import find_ui.controller.values.request.SaveAnswerForm;
+import find_ui.controller.values.request.SaveAnswerForm.QuestionAndSelectableAnswerVo;
 import find_ui.controller.values.response.PickedValuesResult;
 import find_ui.controller.values.response.PickedValuesResult.ValuesDto;
 import find_ui.controller.values.response.QuestionAnswerResult;
@@ -20,6 +24,7 @@ import find_ui.entity.user.User;
 import find_ui.entity.values.Values;
 import find_ui.entity.values.ValuesAnswer;
 import find_ui.entity.values.ValuesQuestion;
+import find_ui.entity.values.ValuesSelectableAnswer;
 import find_ui.enums.ValuesCategoryType;
 import find_ui.enums.ValuesViewType;
 import find_ui.enums.response.ReturnCode;
@@ -27,6 +32,7 @@ import find_ui.exception.CustomException;
 import find_ui.repository.UserRepository;
 import find_ui.repository.ValuesAnswerRepository;
 import find_ui.repository.ValuesQuestionRepository;
+import find_ui.repository.ValuesSelectableAnswerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +45,8 @@ public class ValuesService {
     private final UserRepository userRepository;
     private final ValuesQuestionRepository valuesQuestionRepository;
     private final ValuesAnswerRepository valuesAnswerRepository;
+    private final ValuesSelectableAnswerRepository valuesSelectableAnswerRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
     public ValuesViewType getUserValuesViewType(Long userSequence) {
         Optional<User> userOptional = userRepository.findById(userSequence);
@@ -172,5 +180,29 @@ public class ValuesService {
         }
 
         return QuestionAnswerResult.of(questionAndAnswerList);
+    }
+
+    public void saveAnswer(SaveAnswerForm saveAnswerForm) {
+        Long userSequence = saveAnswerForm.getUserSequence();
+        Optional<User> userOptional = userRepository.findById(userSequence);
+        if (!userOptional.isPresent()) {
+            throw new CustomException(ReturnCode.UNKNOWN_ERROR);
+        }
+        User user = userOptional.get();
+
+        List<QuestionAndSelectableAnswerVo> questionAndSelectableAnswerList =
+                saveAnswerForm.getQuestionAndSelectableAnswerList();
+
+        for (QuestionAndSelectableAnswerVo item : questionAndSelectableAnswerList) {
+            ValuesQuestion valuesQuestion = valuesQuestionRepository.findById(item.getQuestionSequence()).get();
+            ValuesSelectableAnswer valuesSelectableAnswer =
+                    valuesSelectableAnswerRepository.findById(item.getSelectableAnswerSequence()).get();
+            ValuesAnswer valuesAnswer = ValuesAnswer.builder()
+                                                    .user(user)
+                                                    .valuesQuestion(valuesQuestion)
+                                                    .valuesSelectableAnswer(valuesSelectableAnswer)
+                                                    .build();
+            valuesAnswerRepository.save(valuesAnswer);
+        }
     }
 }

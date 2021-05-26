@@ -2,10 +2,12 @@ package find_ui.controller.values;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import find_ui.controller.matching.response.MatchingResult;
+import find_ui.controller.values.request.SaveAnswerForm;
 import find_ui.controller.values.response.PickedValuesResult;
 import find_ui.controller.values.response.QuestionAnswerResult;
 import find_ui.enums.ValuesViewType;
@@ -43,7 +45,7 @@ public class ValuesController {
             @ApiResponse(responseCode = "0000", description = "Success Request",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = MatchingResult.class)))
+                            schema = @Schema(implementation = PickedValuesResult.class)))
     })
     @GetMapping("/{userSequence}/picked/values")
     public CommonResponse getUserValuesPickedValues(@PathVariable Long userSequence) {
@@ -57,12 +59,26 @@ public class ValuesController {
             @ApiResponse(responseCode = "0000", description = "Success Request",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = MatchingResult.class)))
+                            schema = @Schema(implementation = QuestionAnswerResult.class)))
     })
     @GetMapping("/{userSequence}/question")
     public CommonResponse getValuesQuestion(@PathVariable Long userSequence) {
         QuestionAnswerResult questionAnswerResult = valuesService.getValuesQuestion(userSequence);
         return new CommonResponse(questionAnswerResult);
+    }
+
+
+    @Operation(summary = "Save Question Answer")
+    @ApiResponses({
+            @ApiResponse(responseCode = "0000", description = "Success Request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CommonResponse.class)))
+    })
+    @PostMapping("/save/answer")
+    public CommonResponse saveAnswer(@RequestBody SaveAnswerForm saveAnswerForm) {
+        valuesService.saveAnswer(saveAnswerForm);
+        return CommonResponse.success();
     }
 
 

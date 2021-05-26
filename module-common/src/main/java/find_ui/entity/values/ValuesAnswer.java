@@ -12,12 +12,18 @@ import javax.persistence.OneToOne;
 
 import find_ui.entity.BaseEntity;
 import find_ui.entity.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ValuesAnswer extends BaseEntity {
 
     @Id
