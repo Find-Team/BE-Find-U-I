@@ -19,20 +19,20 @@ import find_ui.entity.values.Values;
 import find_ui.entity.values.ValuesAnswer;
 import find_ui.enums.SexType;
 import find_ui.enums.UserStatus;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userSequence")
     private Long userSequence;
-
-    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(20) default 'SUSPEND'")

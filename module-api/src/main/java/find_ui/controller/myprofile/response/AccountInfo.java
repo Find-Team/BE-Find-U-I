@@ -1,6 +1,7 @@
 package find_ui.controller.myprofile.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class AccountInfo {
     private String nickName;
-    private LocalDate birthDay;
+    private LocalDateTime birthDay;
     private SexType sexType;
     private String location;
 }

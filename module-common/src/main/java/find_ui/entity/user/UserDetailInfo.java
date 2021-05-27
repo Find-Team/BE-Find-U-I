@@ -9,12 +9,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import find_ui.entity.BaseEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity(name = "user_dtl_info")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDetailInfo extends BaseEntity {
 
     @Id
