@@ -58,12 +58,15 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user")
     private UserDetailInfo userDetailInfo;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<UserImage> userImage = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Values> valuesList = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<ValuesAnswer> valuesAnswerList = new ArrayList<>();
 

@@ -1,7 +1,6 @@
 package find_ui.controller.myprofile;
 
 import find_ui.controller.myprofile.response.AccountInfo;
-import find_ui.controller.myprofile.response.BasicInfo;
 import find_ui.entity.user.User;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
