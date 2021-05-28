@@ -9,20 +9,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import find_ui.controller.values.request.SaveAnswerForm;
 import find_ui.controller.values.request.SaveAnswerForm.QuestionAndSelectableAnswerVo;
+import find_ui.controller.values.request.SavePriorityAnswerForm;
 import find_ui.controller.values.response.PickedValuesResult;
 import find_ui.controller.values.response.PickedValuesResult.ValuesDto;
 import find_ui.controller.values.response.QuestionAnswerResult;
 import find_ui.controller.values.response.QuestionAnswerResult.AnswerVo;
 import find_ui.controller.values.response.QuestionAnswerResult.QuestionAndAnswer;
 import find_ui.controller.values.response.QuestionAnswerResult.QuestionAndAnswerVo;
-import find_ui.entity.matching.Matching;
-import find_ui.entity.matching.QMatching;
 import find_ui.entity.user.User;
 import find_ui.entity.values.QValuesAnswer;
 import find_ui.entity.values.Values;
@@ -30,6 +30,7 @@ import find_ui.entity.values.ValuesAnswer;
 import find_ui.entity.values.ValuesQuestion;
 import find_ui.entity.values.ValuesSelectableAnswer;
 import find_ui.enums.AnswerType;
+import find_ui.enums.PriorityAnswerType;
 import find_ui.enums.ValuesCategoryType;
 import find_ui.enums.ValuesViewType;
 import find_ui.enums.response.ReturnCode;
@@ -37,6 +38,7 @@ import find_ui.exception.CustomException;
 import find_ui.repository.UserRepository;
 import find_ui.repository.ValuesAnswerRepository;
 import find_ui.repository.ValuesQuestionRepository;
+import find_ui.repository.ValuesRepository;
 import find_ui.repository.ValuesSelectableAnswerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +53,7 @@ public class ValuesService {
     private final ValuesQuestionRepository valuesQuestionRepository;
     private final ValuesAnswerRepository valuesAnswerRepository;
     private final ValuesSelectableAnswerRepository valuesSelectableAnswerRepository;
+    private final ValuesRepository valuesRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
     public ValuesViewType getUserValuesViewType(Long userSequence) {
@@ -60,7 +63,7 @@ public class ValuesService {
         }
         User user = userOptional.get();
 
-        ValuesViewType valuesViewType = null;
+        ValuesViewType valuesViewType;
 
         if (!user.getValuesList().isEmpty()
             && user.getValuesList().size() == 5) {
@@ -85,7 +88,7 @@ public class ValuesService {
         List<ValuesDto> valuesDtoList = new ArrayList<>();
 
         for (Values values : valuesList) {
-            Long pickedQuestionSequence = values.getPickValuesQuestionSequence().getValuesQuestionSequence();
+            Long pickedQuestionSequence = values.getPickValuesQuestion().getValuesQuestionSequence();
             ValuesQuestion question = valuesQuestionRepository.findById(pickedQuestionSequence).get();
             valuesDtoList.add(ValuesDto.builder()
                                        .valuesSequence(question.getValuesQuestionSequence())
@@ -222,6 +225,39 @@ public class ValuesService {
                                            .build();
                 valuesAnswerRepository.save(valuesAnswer);
             }
+        }
+    }
+
+    @Transactional
+    public void savePriorityAnswer(SavePriorityAnswerForm savePriorityAnswerForm) {
+        Long userSequence = savePriorityAnswerForm.getUserSequence();
+        Optional<User> userOptional = userRepository.findById(userSequence);
+        if (!userOptional.isPresent()) {
+            throw new CustomException(ReturnCode.UNKNOWN_ERROR);
+        }
+        User user = userOptional.get();
+
+        List<Values> willSaveValuesList = new ArrayList<>();
+
+        PriorityAnswerType priorityAnswerType = savePriorityAnswerForm.getPriorityAnswerType();
+        deleteAlreadyValuesIfNeccsary(user, priorityAnswerType);
+
+        List<Long> questionSequenceList = savePriorityAnswerForm.getQuestionSequenceList();
+        Long priorityCount = 1L;
+        for (Long item : questionSequenceList) {
+            ValuesQuestion valuesQuestion = valuesQuestionRepository.findById(item).get();
+            willSaveValuesList.add(Values.builder()
+                                         .user(user)
+                                         .pickValuesQuestion(valuesQuestion)
+                                         .priority(priorityCount++)
+                                         .build());
+        }
+        valuesRepository.saveAll(willSaveValuesList);
+    }
+
+    public void deleteAlreadyValuesIfNeccsary(User user, PriorityAnswerType priorityAnswerType) {
+        if (priorityAnswerType == PriorityAnswerType.RE_PICK_QUESTION) {
+            valuesRepository.deleteByUser(user);
         }
     }
 }

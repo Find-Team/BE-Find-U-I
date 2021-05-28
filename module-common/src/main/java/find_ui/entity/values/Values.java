@@ -11,12 +11,18 @@ import javax.persistence.OneToOne;
 
 import find_ui.entity.BaseEntity;
 import find_ui.entity.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity(name = "valuation")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Values extends BaseEntity {
 
     @Id
@@ -30,7 +36,7 @@ public class Values extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "pick_values_question_seq")
-    private ValuesQuestion pickValuesQuestionSequence;
+    private ValuesQuestion pickValuesQuestion;
 
     private Long priority;
 

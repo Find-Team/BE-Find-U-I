@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import find_ui.controller.values.request.SaveAnswerForm;
+import find_ui.controller.values.request.SavePriorityAnswerForm;
 import find_ui.controller.values.response.PickedValuesResult;
 import find_ui.controller.values.response.QuestionAnswerResult;
 import find_ui.enums.ValuesViewType;
@@ -81,5 +82,17 @@ public class ValuesController {
         return CommonResponse.success();
     }
 
+    @Operation(summary = "Save 5 Picked Answer")
+    @ApiResponses({
+            @ApiResponse(responseCode = "0000", description = "Success Request",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CommonResponse.class)))
+    })
+    @PostMapping("/save/priority/answer")
+    public CommonResponse savePriorityAnswer(@RequestBody SavePriorityAnswerForm savePriorityAnswerForm) {
+        valuesService.savePriorityAnswer(savePriorityAnswerForm);
+        return CommonResponse.success();
+    }
 
 }
