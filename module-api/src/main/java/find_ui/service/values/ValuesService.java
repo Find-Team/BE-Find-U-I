@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import find_ui.controller.values.request.SaveAnswerForm;
@@ -20,11 +21,15 @@ import find_ui.controller.values.response.QuestionAnswerResult;
 import find_ui.controller.values.response.QuestionAnswerResult.AnswerVo;
 import find_ui.controller.values.response.QuestionAnswerResult.QuestionAndAnswer;
 import find_ui.controller.values.response.QuestionAnswerResult.QuestionAndAnswerVo;
+import find_ui.entity.matching.Matching;
+import find_ui.entity.matching.QMatching;
 import find_ui.entity.user.User;
+import find_ui.entity.values.QValuesAnswer;
 import find_ui.entity.values.Values;
 import find_ui.entity.values.ValuesAnswer;
 import find_ui.entity.values.ValuesQuestion;
 import find_ui.entity.values.ValuesSelectableAnswer;
+import find_ui.enums.AnswerType;
 import find_ui.enums.ValuesCategoryType;
 import find_ui.enums.ValuesViewType;
 import find_ui.enums.response.ReturnCode;
@@ -197,12 +202,26 @@ public class ValuesService {
             ValuesQuestion valuesQuestion = valuesQuestionRepository.findById(item.getQuestionSequence()).get();
             ValuesSelectableAnswer valuesSelectableAnswer =
                     valuesSelectableAnswerRepository.findById(item.getSelectableAnswerSequence()).get();
-            ValuesAnswer valuesAnswer = ValuesAnswer.builder()
-                                                    .user(user)
-                                                    .valuesQuestion(valuesQuestion)
-                                                    .valuesSelectableAnswer(valuesSelectableAnswer)
-                                                    .build();
-            valuesAnswerRepository.save(valuesAnswer);
+
+            BooleanBuilder builder = new BooleanBuilder();
+            builder.and(QValuesAnswer.valuesAnswer.user.eq(user));
+            builder.and(QValuesAnswer.valuesAnswer.valuesQuestion.eq(valuesQuestion));
+            ValuesAnswer valuesAnswer = jpaQueryFactory.selectFrom(QValuesAnswer.valuesAnswer)
+                                                       .where(builder)
+                                                       .fetchOne();
+
+            if (item.getAnswerType() == AnswerType.CANCEL_ANSWER) {
+                valuesAnswerRepository.delete(valuesAnswer);
+            } else if (item.getAnswerType() == AnswerType.ANSWER) {
+                // Prevent Logic Code
+                valuesAnswerRepository.delete(valuesAnswer);
+                valuesAnswer = ValuesAnswer.builder()
+                                           .user(user)
+                                           .valuesQuestion(valuesQuestion)
+                                           .valuesSelectableAnswer(valuesSelectableAnswer)
+                                           .build();
+                valuesAnswerRepository.save(valuesAnswer);
+            }
         }
     }
 }
