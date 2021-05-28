@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -121,6 +122,7 @@ public class MatchingService {
         return matching.getFromUser();
     }
 
+    @Transactional
     public void requestMatching(MatchingForm matchingForm) {
 
         Long fromUserSequence = matchingForm.getFromUserSequence();
@@ -138,6 +140,7 @@ public class MatchingService {
                                          toUser, fromUser);
                 addNewMatchingData(MatchingStatus.MATCHING_COMPLETE, fromUser, toUser);
                 addNewMatchingData(MatchingStatus.MATCHING_COMPLETE, toUser, fromUser);
+                break;
             case FEELING:
                 boolean isMatchingPossible = checkMatchingPossible(MatchingStatus.FEELING, fromUser, toUser);
                 if (isMatchingPossible) {
@@ -148,6 +151,7 @@ public class MatchingService {
                 break;
             case DIBS:
                 addNewMatchingData(MatchingStatus.DIBS, fromUser, toUser);
+                break;
             case DISCONNECTED_MATCHING:
                 disconnectedMatchingData(MatchingStatus.MATCHING, MatchingStatus.DISCONNECTED_MATCHING,
                                          fromUser, toUser);
@@ -170,7 +174,6 @@ public class MatchingService {
                 disconnectedMatchingData(MatchingStatus.DIBS, MatchingStatus.DISCONNECTED_DIBS,
                                          toUser, fromUser);
                 break;
-
             default:
                 log.info("Requested matchingStatus(={}) is not appropriate.", matchingStatus);
                 break;
@@ -189,7 +192,7 @@ public class MatchingService {
         executeQueryFactory(toMatchingStatus, builder);
     }
 
-    private long executeQueryFactory(MatchingStatus toMatchingStatus, BooleanBuilder builder) {
+    public long executeQueryFactory(MatchingStatus toMatchingStatus, BooleanBuilder builder) {
         return jpaQueryFactory.update(QMatching.matching)
                               .where(builder)
                               .set(QMatching.matching.matchingStatus, toMatchingStatus)
