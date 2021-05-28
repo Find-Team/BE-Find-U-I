@@ -15,6 +15,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         Server server = new Server();
         server.setUrl("https://findu-i.ga");
-        return new OpenAPI().servers(List.of(server));
+        Server localhostServer = new Server();
+        localhostServer.setUrl("http://localhost:8080");
+        return new OpenAPI().servers(List.of(server,localhostServer));
     }
 }
