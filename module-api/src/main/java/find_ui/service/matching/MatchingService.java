@@ -66,9 +66,14 @@ public class MatchingService {
         List<CommonInfo> sendDibsList = getFilteredCommonInfoList(MatchingStatus.DIBS,
                                                                   allSendList, true);
 
-        List<CommonInfo> connectedList = getConnectedList(receivedFeeling, sendFeeling);
-        receivedFeeling = getListWithoutIntersection(receivedFeeling, connectedList);
-        sendFeeling = getListWithoutIntersection(sendFeeling, connectedList);
+        builder = new BooleanBuilder();
+        builder.and(QMatching.matching.fromUser.eq(user));
+        builder.and(QMatching.matching.matchingStatus.eq(MatchingStatus.MATCHING));
+        List<Matching> matchingList = jpaQueryFactory.selectFrom(QMatching.matching)
+                                              .where(builder)
+                                              .fetch();
+
+        List<CommonInfo> connectedList = getConnectedList(matchingList);
 
         return MatchingResult.builder()
                              .connected(connectedList)
@@ -80,11 +85,17 @@ public class MatchingService {
 
     }
 
-    private List<CommonInfo> getConnectedList(List<CommonInfo> receivedFeeling, List<CommonInfo> sendFeeling) {
-        return receivedFeeling.stream()
-                              .filter(i -> sendFeeling.stream()
-                                                           .anyMatch(j -> i.getUserSequence() == j.getUserSequence()))
-                              .collect(Collectors.toList());
+    private List<CommonInfo> getConnectedList(List<Matching> matchingList) {
+        return matchingList.stream()
+                           .map(i -> {
+                               User user = i.getToUser();
+                               return CommonInfo.of(user,
+                                             getImageUrl(user),
+                                             AgeUtil.getAge(user.getBirthDayYmdt()),
+                                             BasicInfoUtil.getBasicInfo(user.getUserDetailInfo().getBasicInfo()).getJob(),
+                                             "DM DM DM");
+                           })
+                           .collect(Collectors.toList());
     }
 
     private List<CommonInfo> getListWithoutIntersection(List<CommonInfo> targetList,
